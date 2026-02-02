@@ -4,41 +4,42 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Be My Valentine 💖</title>
- 
+
 <style>
 body {
-height: 100vh;
+min-height: 100vh;
 margin: 0;
 display: flex;
 justify-content: center;
 align-items: center;
 background: linear-gradient(135deg, #ff758c, #ff7eb3);
-font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+font-family: 'Poppins', system-ui, sans-serif;
+padding: 16px;
 }
 
 .card {
 background: white;
-padding: 40px;
+padding: 32px 24px;
 border-radius: 20px;
 text-align: center;
-width: 350px;
-position: relative;
+width: 100%;
+max-width: 360px;
 box-shadow: 0 20px 40px rgba(0,0,0,0.2);
 }
 
 h1 {
 color: #ff4d6d;
-margin-bottom: 30px;
-font-size: 26px;
+margin-bottom: 28px;
+font-size: 24px;
 }
 
 .buttons {
 position: relative;
-height: 120px;
+height: 160px; /* taller = mobile safe */
 }
 
 button {
-padding: 12px 28px;
+padding: 12px 26px;
 border: none;
 border-radius: 30px;
 font-size: 16px;
@@ -51,6 +52,7 @@ transition: left 0.15s ease, top 0.15s ease, transform 0.1s ease;
 background: #ff4d6d;
 color: white;
 left: 50%;
+top: 90px;
 transform: translateX(-120%);
 }
 
@@ -62,6 +64,7 @@ transform: translateX(-120%) scale(1.05);
 background: #ddd;
 color: #333;
 left: 50%;
+top: 90px;
 transform: translateX(20%);
 }
 
@@ -71,13 +74,13 @@ animation: pop 0.5s ease forwards;
 }
 
 .result img {
-width: 200px;
+width: 180px;
 margin-top: 20px;
 }
 
 @keyframes pop {
-0% { transform: scale(0.8); opacity: 0; }
-100% { transform: scale(1); opacity: 1; }
+from { transform: scale(0.8); opacity: 0; }
+to { transform: scale(1); opacity: 1; }
 }
 </style>
 </head>
@@ -94,35 +97,54 @@ margin-top: 20px;
 
 <div class="result" id="result">
 <h1>Yessss!!! 😍</h1>
-<img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExN3hqMGRoNWtveGxyb200eGY4aDYyb2F6bXlwdmdxNnBqdXI2dGNtNSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/ytu2GUYbvhz7zShGwS/giphy.gif" alt="Yay">
+<img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExZGtsM2Rna3ZwaXA1NXBwb3NvdTJsaDAza2pmbG1mcHIyNXIzMmJmaCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ytu2GUYbvhz7zShGwS/giphy.gif" alt="Yay">
 </div>
 </div>
 
 <script>
 const noBtn = document.getElementById("no");
-const box = document.getElementById("box");
 const yesBtn = document.getElementById("yes");
+const box = document.getElementById("box");
 const result = document.getElementById("result");
 const buttons = document.querySelector(".buttons");
+
+function isOverlapping(a, b) {
+const r1 = a.getBoundingClientRect();
+const r2 = b.getBoundingClientRect();
+return !(
+r1.right < r2.left ||
+r1.left > r2.right ||
+r1.bottom < r2.top ||
+r1.top > r2.bottom
+);
+}
 
 function moveNoButton() {
 const boxRect = box.getBoundingClientRect();
 const btnRect = noBtn.getBoundingClientRect();
-const padding = 10;
+const padding = 12;
 
+let x, y;
+let attempts = 0;
+
+do {
 const maxX = boxRect.width - btnRect.width - padding;
 const maxY = boxRect.height - btnRect.height - padding;
 
-const x = Math.random() * maxX;
-const y = Math.random() * maxY;
+x = Math.random() * maxX;
+y = Math.random() * maxY;
 
 noBtn.style.left = `${x}px`;
 noBtn.style.top = `${y}px`;
+
+attempts++;
+if (attempts > 20) break; // safety exit
+} while (isOverlapping(noBtn, yesBtn));
 }
 
 noBtn.addEventListener("mouseenter", moveNoButton);
 
-// Mobile support
+// Mobile touch support
 noBtn.addEventListener("touchstart", (e) => {
 e.preventDefault();
 moveNoButton();
