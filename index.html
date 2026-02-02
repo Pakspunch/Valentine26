@@ -53,21 +53,19 @@ transition: left 0.15s ease, top 0.15s ease, transform 0.1s ease;
 #yes {
 background: #ff4d6d;
 color: white;
-left: 50%;
+left: 20px;
 top: 90px;
-transform: translateX(-120%);
 }
 
 #yes:hover {
-transform: translateX(-120%) scale(1.05);
+transform: scale(1.05);
 }
 
 #no {
 background: #ddd;
 color: #333;
-left: 50%;
+right: 20px;
 top: 90px;
-transform: translateX(20%);
 }
 
 .result {
@@ -108,7 +106,7 @@ opacity: 0;
 <body>
 
 <div class="card">
-<h1>Bebe… will you be my Valentine? 💖</h1>
+<h1>Bauna Badmosh… will you be my Valentine? 💖</h1>
 
 <div class="buttons" id="box">
 <button id="yes">Yes 💘</button>
@@ -121,7 +119,7 @@ opacity: 0;
 </div>
 </div>
 
-<!-- 🎺 Hidden YouTube Player (your exact video) -->
+<!-- 🎺 Hidden YouTube Video (Careless Whisper clip) -->
 <iframe
 id="ytplayer"
 width="0"
@@ -140,32 +138,21 @@ const result = document.getElementById("result");
 const buttons = document.querySelector(".buttons");
 const player = document.getElementById("ytplayer");
 
-function isOverlapping(a, b) {
-const r1 = a.getBoundingClientRect();
-const r2 = b.getBoundingClientRect();
-return !(
-r1.right < r2.left ||
-r1.left > r2.right ||
-r1.bottom < r2.top ||
-r1.top > r2.bottom
-);
-}
-
 function moveNoButton() {
 const boxRect = box.getBoundingClientRect();
 const btnRect = noBtn.getBoundingClientRect();
 const padding = 12;
-let x, y, attempts = 0;
 
-do {
+// 🔒 Right-half SAFE ZONE ONLY
+const minX = boxRect.width / 2 + padding;
 const maxX = boxRect.width - btnRect.width - padding;
 const maxY = boxRect.height - btnRect.height - padding;
-x = Math.random() * maxX;
-y = Math.random() * maxY;
+
+const x = minX + Math.random() * (maxX - minX);
+const y = Math.random() * maxY;
+
 noBtn.style.left = `${x}px`;
 noBtn.style.top = `${y}px`;
-attempts++;
-} while (isOverlapping(noBtn, yesBtn) && attempts < 20);
 }
 
 noBtn.addEventListener("mouseenter", moveNoButton);
@@ -194,10 +181,10 @@ result.style.display = "block";
 document.body.style.background =
 "linear-gradient(135deg, #ff9a9e, #fad0c4)";
 
-// Trigger video autoplay
+// Trigger YouTube autoplay
 player.src = player.src;
 
-// Attempt unmute (works on desktop, some Android)
+// Attempt unmute (desktop browsers)
 setTimeout(() => {
 player.contentWindow.postMessage(
 '{"event":"command","func":"unMute","args":""}',
